@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayFootball League</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-blue: #38bdf8;
+            --text-color: #f8fafc;
+            --border-color: #334155;
+            --p1-color: #0284c7;
+            --p2-color: #e11d48;
+            --p3-color: #d97706;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+        }
+
+        /* Auth Bar */
+        .auth-bar {
+            background-color: var(--card-bg);
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .auth-inputs {
+            display: flex;
+            gap: 10px;
+        }
+        .auth-inputs input,
+        .auth-inputs select {
+            padding: 6px 10px;
+            background-color: var(--bg-color);
+            border:1px solid var(--border-color);
+            color:#fff;
+            border-radius: 4px;
+            outline: none;
+        }
+        .auth-inputs select option {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+        button {
+            background-color: var(--accent-blue);
+            color: #000;
+            font-weight: bold;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button.logout-btn {
+            background-color: var(--p2-color);
+            color: #fff;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #1a2332;
+            color: var(--accent-blue);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        td.team-name, td.player-name {
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .team-subtext {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: normal;
+        }
+
+        /* Fixtures */
+        .matchday-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .matchday-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .matchday-title {
+            font-weight: bold;
+            color: var(--accent-blue);
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+
+        .match-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .team { flex: 1; }
+        .team.home { text-align: right; font-weight: bold; }
+        .team.away { text-align: left; font-weight: bold; }
+
+        .score-inputs {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin: 0 10px;
+        }
+
+        .score-inputs input {
+            width: 35px;
+            height: 28px;
+            text-align: center;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .score-inputs input:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .badge {
+            font-size: 0.7rem;
+            padding: 2px 5px;
+            border-radius: 3px;
+            color: #fff;
+            margin: 0 4px;
+        }
+        .p1-bg { background-color: var(--p1-color); }
+        .p2-bg { background-color: var(--p2-color); }
+        .p3-bg { background-color: var(--p3-color); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>PlayStation eFootball League</h1>
+
+    <!-- Authentication Section -->
+    <div class="auth-bar">
+        <div id="user-status">Status: <strong>Viewer Mode (Read Only)</strong></div>
+        <div class="auth-inputs" id="auth-form">
+            <input type="email" id="email" placeholder="Player Email">
+            <input type="password" id="password" placeholder="Password">
+            <select id="gender">
+                <option value=""disabled selected>Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="both">Both</option>
+            </select>
+            <button onclick="login()">Log In</button>
+        </div>
+        <button id="logout-btn" class="logout-btn" style="display:none;" onclick="logout()">Log Out</button>
+    </div>
+
+    <!-- Overall Player Leaderboard -->
+    <h2>Overall Player Leaderboard</h2>
+    <table>
+        <thead>
+            <tr>
+                <th style="text-align:left;">Player</th>
+                <th>Assigned Teams</th>
+                <th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th>
+            </tr>
+        </thead>
+        <tbody id="player-standings-body"></tbody>
+    </table>
+
+    <!-- Individual Team Standings Table -->
+    <h2>Team Standings</h2>
+    <table>
+        <thead>
+            <tr>
+                <th style="text-align:left;">Team</th>
+                <th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th>
+            </tr>
+        </thead>
+        <tbody id="team-standings-body"></tbody>
+    </table>
+
+    <!-- Match Fixtures -->
+    <h2>Match Fixtures</h2>
+    <div class="matchday-grid" id="fixtures-container"></div>
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+    // 1. Firebase Config (Replace with your actual keys)
+    const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    let currentUser = null;
+
+    // Player definitions with their assigned 2 teams
+    const players = {
+        "Player 1": { teams: ["Arsenal", "FC Barcelona"] },
+        "Player 2": { teams: ["Manchester United", "Liverpool FC"] },
+        "Player 3": { teams: ["Real Madrid", "Inter Milan"] }
+    };
+
+    // Team definitions
+    const teams = {
+        "Arsenal": { manager: "Player 1", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0 },
+        "FC Barcelona": { manager: "Player 1", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0 },
+        "Manchester United": { manager: "Player 2", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0 },
+        "Liverpool FC": { manager: "Player 2", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0 },
+        "Real Madrid": { manager: "Player 3", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0 },
+        "Inter Milan": { manager: "Player 3", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0 }
+    };
+
+    // Fixtures
+    const fixtures = [
+        { day: 1, matches: [ ["Arsenal", "Manchester United"], ["FC Barcelona", "Real Madrid"], ["Liverpool FC", "Inter Milan"] ] },
+        { day: 2, matches: [ ["FC Barcelona", "Manchester United"], ["Arsenal", "Inter Milan"], ["Liverpool FC", "Real Madrid"] ] },
+        { day: 3, matches: [ ["Arsenal", "Liverpool FC"], ["FC Barcelona", "Inter Milan"], ["Manchester United", "Real Madrid"] ] },
+        { day: 4, matches: [ ["FC Barcelona", "Liverpool FC"], ["Arsenal", "Real Madrid"], ["Manchester United", "Inter Milan"] ] },
+        { day: 5, matches: [ ["Arsenal", "Manchester United"], ["FC Barcelona", "Inter Milan"], ["Liverpool FC", "Real Madrid"] ] },
+        { day: 6, matches: [ ["Manchester United", "Arsenal"], ["Real Madrid", "FC Barcelona"], ["Inter Milan", "Liverpool FC"] ] },
+        { day: 7, matches: [ ["Manchester United", "FC Barcelona"], ["Inter Milan", "Arsenal"], ["Real Madrid", "Liverpool FC"] ] },
+        { day: 8, matches: [ ["Liverpool FC", "Arsenal"], ["Inter Milan", "FC Barcelona"], ["Real Madrid", "Manchester United"] ] },
+        { day: 9, matches: [ ["Liverpool FC", "FC Barcelona"], ["Real Madrid", "Arsenal"], ["Inter Milan", "Manchester United"] ] },
+        { day: 10, matches: [ ["Manchester United", "Arsenal"], ["Inter Milan", "FC Barcelona"], ["Real Madrid", "Liverpool FC"] ] }
+    ];
+
+    function getBadge(manager) {
+        if (manager === "Player 1") return '<span class="badge p1-bg">P1</span>';
+        if (manager === "Player 2") return '<span class="badge p2-bg">P2</span>';
+        return '<span class="badge p3-bg">P3</span>';
+    }
+
+    // Render Fixture Boxes
+    function renderFixtures() {
+        const container = document.getElementById('fixtures-container');
+        container.innerHTML = '';
+
+        fixtures.forEach((md, dayIdx) => {
+            const box = document.createElement('div');
+            box.className = 'matchday-box';
+            let html = `<div class="matchday-title">Matchday ${md.day}</div>`;
+
+            md.matches.forEach((m, matchIdx) => {
+                const home = m[0];
+                const away = m[1];
+                const matchId = `m_${dayIdx}_${matchIdx}`;
+                const isDisabled = !currentUser ? 'disabled' : '';
+
+                html += `
+                    <div class="match-row">
+                        <div class="team home">${home} ${getBadge(teams[home].manager)}</div>
+                        <div class="score-inputs">
+                            <input type="number" min="0" id="${matchId}_h" ${isDisabled} onchange="saveScore('${matchId}')">
+                            -
+                            <input type="number" min="0" id="${matchId}_a" ${isDisabled} onchange="saveScore('${matchId}')">
+                        </div>
+                        <div class="team away">${getBadge(teams[away].manager)} ${away}</div>
+                    </div>
+                `;
+            });
+            box.innerHTML = html;
+            container.appendChild(box);
+        });
+    }
+
+    // Auth Listeners
+    auth.onAuthStateChanged(user => {
+        currentUser = user;
+        const status = document.getElementById('user-status');
+        const authForm = document.getElementById('auth-form');
+        const logoutBtn = document.getElementById('logout-btn');
+
+        if (user) {
+            status.innerHTML = `Logged in as: <strong>${user.email}</strong> (Editor)`;
+            authForm.style.display = 'none';
+            logoutBtn.style.display = 'inline-block';
+        } else {
+            status.innerHTML = `Status: <strong>Viewer Mode (Read Only)</strong>`;
+            authForm.style.display = 'flex';
+            logoutBtn.style.display = 'none';
+        }
+        renderFixtures();
+        loadScoresFromFirebase();
+    });
+
+    function login() {
+        const e = document.getElementById('email').value;
+        const p = document.getElementById('password').value;
+        const gender = document.getElementById('gender').value;
+        auth.signInWithEmailAndPassword(e, p).catch(err => alert(err.message));
+    }
+
+    function logout() {
+        auth.signOut();
+    }
+
+    function saveScore(matchId) {
+        if (!currentUser) return;
+        const hVal = document.getElementById(`${matchId}_h`).value;
+        const aVal = document.getElementById(`${matchId}_a`).value;
+
+        db.ref(`scores/${matchId}`).set({
+            home: hVal !== "" ? parseInt(hVal) : null,
+            away: aVal !== "" ? parseInt(aVal) : null
+        });
+    }
+
+    function loadScoresFromFirebase() {
+        db.ref('scores').on('value', snapshot => {
+            const scoresData = snapshot.val() || {};
+
+            fixtures.forEach((md, dayIdx) => {
+                md.matches.forEach((m, matchIdx) => {
+                    const matchId = `m_${dayIdx}_${matchIdx}`;
+                    const hInput = document.getElementById(`${matchId}_h`);
+                    const aInput = document.getElementById(`${matchId}_a`);
+
+                    if (scoresData[matchId]) {
+                        if (hInput) hInput.value = scoresData[matchId].home ?? '';
+                        if (aInput) aInput.value = scoresData[matchId].away ?? '';
+                    }
+                });
+            });
+
+            calculateStandings(scoresData);
+        });
+    }
+
+    function calculateStandings(scoresData) {
+        // Reset Team Stats
+        for (let t in teams) {
+            teams[t].p = 0; teams[t].w = 0; teams[t].d = 0; teams[t].l = 0;
+            teams[t].gf = 0; teams[t].ga = 0; teams[t].gd = 0; teams[t].pts = 0;
+        }
+
+        // Process Matches
+        fixtures.forEach((md, dayIdx) => {
+            md.matches.forEach((m, matchIdx) => {
+                const matchId = `m_${dayIdx}_${matchIdx}`;
+                const data = scoresData[matchId];
+
+                if (data && data.home !== null && data.away !== null) {
+                    const hGoals = data.home;
+                    const aGoals = data.away;
+                    const homeTeam = m[0];
+                    const awayTeam = m[1];
+
+                    teams[homeTeam].p++; teams[awayTeam].p++;
+                    teams[homeTeam].gf += hGoals; teams[homeTeam].ga += aGoals;
+                    teams[awayTeam].gf += aGoals; teams[awayTeam].ga += hGoals;
+
+                    if (hGoals > aGoals) {
+                        teams[homeTeam].w++; teams[homeTeam].pts += 3; teams[awayTeam].l++;
+                    } else if (aGoals > hGoals) {
+                        teams[awayTeam].w++; teams[awayTeam].pts += 3; teams[homeTeam].l++;
+                    } else {
+                        teams[homeTeam].d++; teams[homeTeam].pts += 1;
+                        teams[awayTeam].d++; teams[awayTeam].pts += 1;
+                    }
+                }
+            });
+        });
+
+        for (let t in teams) { teams[t].gd = teams[t].gf - teams[t].ga; }
+
+        renderTables();
+    }
+
+    function renderTables() {
+        // 1. Render Team Table
+        const teamBody = document.getElementById('team-standings-body');
+        teamBody.innerHTML = '';
+
+        let sortedTeams = Object.keys(teams).map(name => ({ name, ...teams[name] }));
+        sortedTeams.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
+
+        sortedTeams.forEach(t => {
+            teamBody.innerHTML += `
+                <tr>
+                    <td class="team-name">${t.name} ${getBadge(t.manager)}</td>
+                    <td>${t.p}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td>
+                    <td>${t.gf}</td><td>${t.ga}</td><td>${t.gd}</td>
+                    <td><strong>${t.pts}</strong></td>
+                </tr>
+            `;
+        });
+
+        // 2. Render Overall Player Leaderboard
+        const playerBody = document.getElementById('player-standings-body');
+        playerBody.innerHTML = '';
+
+        let playerStats = Object.keys(players).map(pName => {
+            let assignedTeams = players[pName].teams;
+            let combined = {
+                name: pName,
+                teamsStr: assignedTeams.join(' & '),
+                p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0
+            };
+
+            assignedTeams.forEach(tName => {
+                const t = teams[tName];
+                combined.p += t.p;
+                combined.w += t.w;
+                combined.d += t.d;
+                combined.l += t.l;
+                combined.gf += t.gf;
+                combined.ga += t.ga;
+                combined.gd += t.gd;
+                combined.pts += t.pts;
+            });
+
+            return combined;
+        });
+
+        // Sort players by total combined Points, Goal Difference, then Goals For
+        playerStats.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
+
+        playerStats.forEach(p => {
+            playerBody.innerHTML += `
+                <tr>
+                    <td class="player-name">${p.name} ${getBadge(p.name)}</td>
+                    <td class="team-subtext">${p.teamsStr}</td>
+                    <td>${p.p}</td><td>${p.w}</td><td>${p.d}</td><td>${p.l}</td>
+                    <td>${p.gf}</td><td>${p.ga}</td><td>${p.gd}</td>
+                    <td><strong>${p.pts}</strong></td>
+                </tr>
+            `;
+        });
+    }
+
+    renderFixtures();
+</script>
+
+</body>
+</html>
