@@ -3,22 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlayFootball League</title>
+    <title>PlayFootball League & Standings</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent-blue: #38bdf8;
-            --text-color: #f8fafc;
-            --border-color: #334155;
-            --p1-color: #0284c7;
-            --p2-color: #e11d48;
-            --p3-color: #d97706;
+            --primary-bg: #121212;
+            --card-bg: #1e1e1e;
+            --accent-color: #00e676;
+            --text-color: #ffffff;
+            --text-muted: #b0b0b0;
+            --border-color: #333333;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
+            background-color: var(--primary-bg);
             color: var(--text-color);
             margin: 0;
             padding: 20px;
@@ -31,62 +29,82 @@
 
         h1, h2 {
             text-align: center;
-            color: var(--accent-blue);
-            text-transform: uppercase;
+            color: var(--accent-color);
         }
 
         /* Auth Bar */
-        .auth-bar {
+        .auth-card {
             background-color: var(--card-bg);
-            padding: 12px 20px;
             border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
             border: 1px solid var(--border-color);
         }
 
-        .auth-inputs {
-            display: flex;
-            gap: 10px;
-        }
-        .auth-inputs input,
-        .auth-inputs select {
-            padding: 6px 10px;
-            background-color: var(--bg-color);
-            border:1px solid var(--border-color);
-            color:#fff;
-            border-radius: 4px;
-            outline: none;
-        }
-        .auth-inputs select option {
-            background-color: var(--card-bg);
-            color: var(--text-color);
-        }
-        button {
-            background-color: var(--accent-blue);
-            color: #000;
-            font-weight: bold;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 4px;
-            cursor: pointer;
+        .auth-status {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.1em;
         }
 
-        button.logout-btn {
-            background-color: var(--p2-color);
-            color: #fff;
+        .auth-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .auth-tabs button {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .auth-tabs button.active-tab {
+            background-color: var(--accent-color);
+            color: #000;
+            border-color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        input, select, button {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background-color: #2a2a2a;
+            color: var(--text-color);
+        }
+
+        button.action-btn {
+            background-color: var(--accent-color);
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+
+        button.action-btn:hover {
+            opacity: 0.9;
         }
 
         /* Tables */
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 30px;
             background-color: var(--card-bg);
             border-radius: 8px;
             overflow: hidden;
-            margin-bottom: 30px;
         }
 
         th, td {
@@ -96,403 +114,476 @@
         }
 
         th {
-            background-color: #1a2332;
-            color: var(--accent-blue);
-            text-transform: uppercase;
-            font-size: 0.85rem;
+            background-color: #252525;
+            color: var(--accent-color);
         }
 
-        td.team-name, td.player-name {
-            text-align: left;
-            font-weight: bold;
-        }
-
-        .team-subtext {
-            font-size: 0.75rem;
-            color: #94a3b8;
-            font-weight: normal;
-        }
-
-        /* Fixtures */
-        .matchday-grid {
+        /* Fixtures Grid */
+        .fixtures-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
         }
 
-        .matchday-box {
+        .matchday-card {
             background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 15px;
+            border: 1px solid var(--border-color);
         }
 
         .matchday-title {
+            color: var(--accent-color);
             font-weight: bold;
-            color: var(--accent-blue);
-            border-bottom: 1px dashed var(--border-color);
-            padding-bottom: 5px;
-            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            margin-bottom: 12px;
         }
 
         .match-row {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin: 8px 0;
-            font-size: 0.9rem;
+            align-items: center;
+            margin-bottom: 10px;
         }
 
-        .team { flex: 1; }
-        .team.home { text-align: right; font-weight: bold; }
-        .team.away { text-align: left; font-weight: bold; }
+        .match-teams {
+            font-size: 0.9em;
+            flex: 1;
+        }
 
         .score-inputs {
             display: flex;
-            align-items: center;
             gap: 5px;
-            margin: 0 10px;
+            align-items: center;
         }
 
         .score-inputs input {
             width: 35px;
-            height: 28px;
             text-align: center;
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-            color: var(--text-color);
-            border-radius: 4px;
-            font-weight: bold;
-        }
-
-        .score-inputs input:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
+            padding: 5px;
         }
 
         .badge {
-            font-size: 0.7rem;
-            padding: 2px 5px;
-            border-radius: 3px;
-            color: #fff;
-            margin: 0 4px;
+            font-size: 0.75em;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background-color: #333;
+            color: var(--text-muted);
+            margin-left: 5px;
         }
-        .p1-bg { background-color: var(--p1-color); }
-        .p2-bg { background-color: var(--p2-color); }
-        .p3-bg { background-color: var(--p3-color); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>PlayStation eFootball League</h1>
+    <h1>PlayFootball PlayStation League</h1>
 
-    <!-- Authentication Section -->
-    <div class="auth-bar">
-        <div id="user-status">Status: <strong>Viewer Mode (Read Only)</strong></div>
-        <div class="auth-inputs" id="auth-form">
-            <input type="email" id="email" placeholder="Player Email">
-            <input type="password" id="password" placeholder="Password">
-            <select id="gender">
-                <option value=""disabled selected>Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="both">Both</option>
-            </select>
-            <button onclick="login()">Log In</button>
+    <!-- Authentication Bar -->
+    <div class="auth-card">
+        <div id="user-status" class="auth-status">Status: <strong>Viewer Mode (Read Only)</strong></div>
+       
+        <div id="auth-controls">
+            <div class="auth-tabs">
+                <button id="tab-login" class="active-tab" onclick="switchAuthTab('login')">Log In</button>
+                <button id="tab-signup" onclick="switchAuthTab('signup')">Sign Up</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form">
+                <input type="email" id="login-email" placeholder="Email" required>
+                <input type="password" id="login-password" placeholder="Password" required>
+                <button type="submit" class="action-btn">Log In</button>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form id="signup-form" style="display: none;">
+                <input type="text" id="signup-name" placeholder="Player Name" required>
+                <input type="email" id="signup-email" placeholder="Email" required>
+                <input type="password" id="signup-password" placeholder="Password (min 6 chars)" minlength="6" required>
+                <select id="signup-gender" required>
+                    <option value="" disabled selected>Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+                <button type="submit" class="action-btn">Create Account</button>
+            </form>
         </div>
-        <button id="logout-btn" class="logout-btn" style="display:none;" onclick="logout()">Log Out</button>
+
+        <div id="logout-controls" style="display: none; text-align: center;">
+            <button onclick="handleLogout()" class="action-btn">Log Out</button>
+        </div>
     </div>
 
-    <!-- Overall Player Leaderboard -->
+    <!-- Standings Sections -->
     <h2>Overall Player Leaderboard</h2>
     <table>
         <thead>
             <tr>
-                <th style="text-align:left;">Player</th>
-                <th>Assigned Teams</th>
-                <th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Teams</th>
+                <th>P</th>
+                <th>W</th>
+                <th>D</th>
+                <th>L</th>
+                <th>GF</th>
+                <th>GA</th>
+                <th>GD</th>
+                <th>Pts</th>
             </tr>
         </thead>
-        <tbody id="player-standings-body"></tbody>
+        <tbody id="player-leaderboard"></tbody>
     </table>
 
-    <!-- Individual Team Standings Table -->
     <h2>Team Standings</h2>
     <table>
         <thead>
             <tr>
-                <th style="text-align:left;">Team</th>
-                <th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th>
+                <th>Pos</th>
+                <th>Team</th>
+                <th>Player</th>
+                <th>P</th>
+                <th>W</th>
+                <th>D</th>
+                <th>L</th>
+                <th>GF</th>
+                <th>GA</th>
+                <th>GD</th>
+                <th>Pts</th>
             </tr>
         </thead>
-        <tbody id="team-standings-body"></tbody>
+        <tbody id="team-standings"></tbody>
     </table>
 
-    <!-- Match Fixtures -->
-    <h2>Match Fixtures</h2>
-    <div class="matchday-grid" id="fixtures-container"></div>
+    <!-- Fixtures Section -->
+    <h2>Fixtures & Results</h2>
+    <div id="fixtures-container" class="fixtures-grid"></div>
 </div>
 
 <!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut,
+        onAuthStateChanged,
+        updateProfile
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import {
+        getFirestore,
+        doc,
+        setDoc,
+        onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-<script>
-    // 1. Firebase Config (Replace with your actual keys)
+    // 1. Firebase Configuration (Replace with your own Firebase Console details)
     const firebaseConfig = {
         apiKey: "YOUR_API_KEY",
         authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
         projectId: "YOUR_PROJECT_ID",
         storageBucket: "YOUR_PROJECT_ID.appspot.com",
         messagingSenderId: "YOUR_SENDER_ID",
         appId: "YOUR_APP_ID"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    let currentUser = null;
-
-    // Player definitions with their assigned 2 teams
-    const players = {
-        "Player 1": { teams: ["Arsenal", "FC Barcelona"] },
-        "Player 2": { teams: ["Manchester United", "Liverpool FC"] },
-        "Player 3": { teams: ["Real Madrid", "Inter Milan"] }
-    };
-
-    // Team definitions
-    const teams = {
-        "Arsenal": { manager: "Player 1", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0 },
-        "FC Barcelona": { manager: "Player 1", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0 },
-        "Manchester United": { manager: "Player 2", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0 },
-        "Liverpool FC": { manager: "Player 2", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0 },
-        "Real Madrid": { manager: "Player 3", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0 },
-        "Inter Milan": { manager: "Player 3", p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0 }
-    };
-
-    // Fixtures
-    const fixtures = [
-        { day: 1, matches: [ ["Arsenal", "Manchester United"], ["FC Barcelona", "Real Madrid"], ["Liverpool FC", "Inter Milan"] ] },
-        { day: 2, matches: [ ["FC Barcelona", "Manchester United"], ["Arsenal", "Inter Milan"], ["Liverpool FC", "Real Madrid"] ] },
-        { day: 3, matches: [ ["Arsenal", "Liverpool FC"], ["FC Barcelona", "Inter Milan"], ["Manchester United", "Real Madrid"] ] },
-        { day: 4, matches: [ ["FC Barcelona", "Liverpool FC"], ["Arsenal", "Real Madrid"], ["Manchester United", "Inter Milan"] ] },
-        { day: 5, matches: [ ["Arsenal", "Manchester United"], ["FC Barcelona", "Inter Milan"], ["Liverpool FC", "Real Madrid"] ] },
-        { day: 6, matches: [ ["Manchester United", "Arsenal"], ["Real Madrid", "FC Barcelona"], ["Inter Milan", "Liverpool FC"] ] },
-        { day: 7, matches: [ ["Manchester United", "FC Barcelona"], ["Inter Milan", "Arsenal"], ["Real Madrid", "Liverpool FC"] ] },
-        { day: 8, matches: [ ["Liverpool FC", "Arsenal"], ["Inter Milan", "FC Barcelona"], ["Real Madrid", "Manchester United"] ] },
-        { day: 9, matches: [ ["Liverpool FC", "FC Barcelona"], ["Real Madrid", "Arsenal"], ["Inter Milan", "Manchester United"] ] },
-        { day: 10, matches: [ ["Manchester United", "Arsenal"], ["Inter Milan", "FC Barcelona"], ["Real Madrid", "Liverpool FC"] ] }
+    // Initial League Setup
+    const teams = [
+        { id: "LIV", name: "Liverpool", player: "Player 1" },
+        { id: "RMA", name: "Real Madrid", player: "Player 1" },
+        { id: "MUN", name: "Man United", player: "Player 2" },
+        { id: "BAR", name: "FC Barcelona", player: "Player 2" },
+        { id: "ARS", name: "Arsenal", player: "Player 3" },
+        { id: "INT", name: "Inter Milan", player: "Player 3" }
     ];
 
-    function getBadge(manager) {
-        if (manager === "Player 1") return '<span class="badge p1-bg">P1</span>';
-        if (manager === "Player 2") return '<span class="badge p2-bg">P2</span>';
-        return '<span class="badge p3-bg">P3</span>';
-    }
+    const fixtures = [
+        // First Leg (Matchdays 1 - 5)
+        { id: "m1", md: 1, home: "LIV", away: "MUN" },
+        { id: "m2", md: 1, home: "ARS", away: "BAR" },
+        { id: "m3", md: 1, home: "RMA", away: "INT" },
 
-    // Render Fixture Boxes
+        { id: "m4", md: 2, home: "MUN", away: "ARS" },
+        { id: "m5", md: 2, home: "BAR", away: "RMA" },
+        { id: "m6", md: 2, home: "INT", away: "LIV" },
+
+        { id: "m7", md: 3, home: "LIV", away: "BAR" },
+        { id: "m8", md: 3, home: "MUN", away: "RMA" },
+        { id: "m9", md: 3, home: "ARS", away: "INT" },
+
+        { id: "m10", md: 4, home: "RMA", away: "LIV" },
+        { id: "m11", md: 4, home: "INT", away: "BAR" },
+        { id: "m12", md: 4, home: "ARS", away: "MUN" },
+
+        { id: "m13", md: 5, home: "LIV", away: "INT" },
+        { id: "m14", md: 5, home: "MUN", away: "BAR" },
+        { id: "m15", md: 5, home: "RMA", away: "ARS" },
+
+        // Second Leg (Matchdays 6 - 10)
+        { id: "m16", md: 6, home: "MUN", away: "LIV" },
+        { id: "m17", md: 6, home: "BAR", away: "ARS" },
+        { id: "m18", md: 6, home: "INT", away: "RMA" },
+
+        { id: "m19", md: 7, home: "ARS", away: "MUN" },
+        { id: "m20", md: 7, home: "RMA", away: "BAR" },
+        { id: "m21", md: 7, home: "LIV", away: "INT" },
+
+        { id: "m22", md: 8, home: "BAR", away: "LIV" },
+        { id: "m23", md: 8, home: "RMA", away: "MUN" },
+        { id: "m24", md: 8, home: "INT", away: "ARS" },
+
+        { id: "m25", md: 9, home: "LIV", away: "RMA" },
+        { id: "m26", md: 9, home: "BAR", away: "INT" },
+        { id: "m27", md: 9, home: "MUN", away: "ARS" },
+
+        { id: "m28", md: 10, home: "INT", away: "LIV" },
+        { id: "m29", md: 10, home: "BAR", away: "MUN" },
+        { id: "m30", md: 10, home: "ARS", away: "RMA" }
+    ];
+
+    let matchScores = {};
+    let isUserLoggedIn = false;
+
+    // Listen to Firebase Auth state
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            isUserLoggedIn = true;
+            document.getElementById('user-status').innerHTML = `Logged in as: <strong>${user.displayName || user.email}</strong>`;
+            document.getElementById('auth-controls').style.display = 'none';
+            document.getElementById('logout-controls').style.display = 'block';
+        } else {
+            isUserLoggedIn = false;
+            document.getElementById('user-status').innerHTML = `Status: <strong>Viewer Mode (Read Only)</strong>`;
+            document.getElementById('auth-controls').style.display = 'block';
+            document.getElementById('logout-controls').style.display = 'none';
+        }
+        renderFixtures();
+    });
+
+    // Listen to Realtime Database updates from Firestore
+    onSnapshot(doc(db, "league", "scores"), (docSnapshot) => {
+        if (docSnapshot.exists()) {
+            matchScores = docSnapshot.data();
+            renderFixtures();
+            calculateAndRenderTables();
+        } else {
+            calculateAndRenderTables();
+        }
+    });
+
+    // Handle Authentication Forms
+    window.switchAuthTab = function(mode) {
+        if (mode === 'login') {
+            document.getElementById('login-form').style.display = 'flex';
+            document.getElementById('signup-form').style.display = 'none';
+            document.getElementById('tab-login').classList.add('active-tab');
+            document.getElementById('tab-signup').classList.remove('active-tab');
+        } else {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('signup-form').style.display = 'flex';
+            document.getElementById('tab-signup').classList.add('active-tab');
+            document.getElementById('tab-login').classList.remove('active-tab');
+        }
+    };
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+        } catch (err) {
+            alert("Login Failed: " + err.message);
+        }
+    });
+
+    document.getElementById('signup-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('signup-name').value;
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
+        try {
+            const userCred = await createUserWithEmailAndPassword(auth, email, password);
+            await updateProfile(userCred.user, { displayName: name });
+        } catch (err) {
+            alert("Sign Up Failed: " + err.message);
+        }
+    });
+
+    window.handleLogout = async function() {
+        await signOut(auth);
+    };
+
+    // Render Fixtures Inputs
     function renderFixtures() {
         const container = document.getElementById('fixtures-container');
         container.innerHTML = '';
 
-        fixtures.forEach((md, dayIdx) => {
-            const box = document.createElement('div');
-            box.className = 'matchday-box';
-            let html = `<div class="matchday-title">Matchday ${md.day}</div>`;
+        for (let md = 1; md <= 10; md++) {
+            const mdMatches = fixtures.filter(m => m.md === md);
+            let mdHTML = `<div class="matchday-card"><div class="matchday-title">Matchday ${md}</div>`;
 
-            md.matches.forEach((m, matchIdx) => {
-                const home = m[0];
-                const away = m[1];
-                const matchId = `m_${dayIdx}_${matchIdx}`;
-                const isDisabled = !currentUser ? 'disabled' : '';
+            mdMatches.forEach(match => {
+                const homeTeam = teams.find(t => t.id === match.home);
+                const awayTeam = teams.find(t => t.id === match.away);
+                const score = matchScores[match.id] || { home: '', away: '' };
 
-                html += `
+                mdHTML += `
                     <div class="match-row">
-                        <div class="team home">${home} ${getBadge(teams[home].manager)}</div>
-                        <div class="score-inputs">
-                            <input type="number" min="0" id="${matchId}_h" ${isDisabled} onchange="saveScore('${matchId}')">
-                            -
-                            <input type="number" min="0" id="${matchId}_a" ${isDisabled} onchange="saveScore('${matchId}')">
+                        <div class="match-teams">
+                            <strong>${homeTeam.name}</strong> vs <strong>${awayTeam.name}</strong>
                         </div>
-                        <div class="team away">${getBadge(teams[away].manager)} ${away}</div>
+                        <div class="score-inputs">
+                            <input type="number" min="0" value="${score.home}"
+                                ${!isUserLoggedIn ? 'disabled' : ''}
+                                onchange="saveScore('${match.id}', 'home', this.value)">
+                            :
+                            <input type="number" min="0" value="${score.away}"
+                                ${!isUserLoggedIn ? 'disabled' : ''}
+                                onchange="saveScore('${match.id}', 'away', this.value)">
+                        </div>
                     </div>
                 `;
             });
-            box.innerHTML = html;
-            container.appendChild(box);
-        });
-    }
 
-    // Auth Listeners
-    auth.onAuthStateChanged(user => {
-        currentUser = user;
-        const status = document.getElementById('user-status');
-        const authForm = document.getElementById('auth-form');
-        const logoutBtn = document.getElementById('logout-btn');
-
-        if (user) {
-            status.innerHTML = `Logged in as: <strong>${user.email}</strong> (Editor)`;
-            authForm.style.display = 'none';
-            logoutBtn.style.display = 'inline-block';
-        } else {
-            status.innerHTML = `Status: <strong>Viewer Mode (Read Only)</strong>`;
-            authForm.style.display = 'flex';
-            logoutBtn.style.display = 'none';
+            mdHTML += `</div>`;
+            container.innerHTML += mdHTML;
         }
-        renderFixtures();
-        loadScoresFromFirebase();
-    });
-
-    function login() {
-        const e = document.getElementById('email').value;
-        const p = document.getElementById('password').value;
-        const gender = document.getElementById('gender').value;
-        auth.signInWithEmailAndPassword(e, p).catch(err => alert(err.message));
     }
 
-    function logout() {
-        auth.signOut();
-    }
-
-    function saveScore(matchId) {
-        if (!currentUser) return;
-        const hVal = document.getElementById(`${matchId}_h`).value;
-        const aVal = document.getElementById(`${matchId}_a`).value;
-
-        db.ref(`scores/${matchId}`).set({
-            home: hVal !== "" ? parseInt(hVal) : null,
-            away: aVal !== "" ? parseInt(aVal) : null
-        });
-    }
-
-    function loadScoresFromFirebase() {
-        db.ref('scores').on('value', snapshot => {
-            const scoresData = snapshot.val() || {};
-
-            fixtures.forEach((md, dayIdx) => {
-                md.matches.forEach((m, matchIdx) => {
-                    const matchId = `m_${dayIdx}_${matchIdx}`;
-                    const hInput = document.getElementById(`${matchId}_h`);
-                    const aInput = document.getElementById(`${matchId}_a`);
-
-                    if (scoresData[matchId]) {
-                        if (hInput) hInput.value = scoresData[matchId].home ?? '';
-                        if (aInput) aInput.value = scoresData[matchId].away ?? '';
-                    }
-                });
-            });
-
-            calculateStandings(scoresData);
-        });
-    }
-
-    function calculateStandings(scoresData) {
-        // Reset Team Stats
-        for (let t in teams) {
-            teams[t].p = 0; teams[t].w = 0; teams[t].d = 0; teams[t].l = 0;
-            teams[t].gf = 0; teams[t].ga = 0; teams[t].gd = 0; teams[t].pts = 0;
+    // Save Score to Firestore
+    window.saveScore = async function(matchId, side, value) {
+        if (!matchScores[matchId]) {
+            matchScores[matchId] = { home: '', away: '' };
         }
+        matchScores[matchId][side] = value === '' ? '' : parseInt(value, 10);
 
-        // Process Matches
-        fixtures.forEach((md, dayIdx) => {
-            md.matches.forEach((m, matchIdx) => {
-                const matchId = `m_${dayIdx}_${matchIdx}`;
-                const data = scoresData[matchId];
+        try {
+            await setDoc(doc(db, "league", "scores"), matchScores, { merge: true });
+        } catch (err) {
+            console.error("Error saving score: ", err);
+        }
+    };
 
-                if (data && data.home !== null && data.away !== null) {
-                    const hGoals = data.home;
-                    const aGoals = data.away;
-                    const homeTeam = m[0];
-                    const awayTeam = m[1];
+    // Calculate Points, GD, and Rankings
+    function calculateAndRenderTables() {
+        // Initialize Team Stats
+        const teamStats = {};
+        teams.forEach(t => {
+            teamStats[t.id] = { ...t, P: 0, W: 0, D: 0, L: 0, GF: 0, GA: 0, GD: 0, Pts: 0 };
+        });
 
-                    teams[homeTeam].p++; teams[awayTeam].p++;
-                    teams[homeTeam].gf += hGoals; teams[homeTeam].ga += aGoals;
-                    teams[awayTeam].gf += aGoals; teams[awayTeam].ga += hGoals;
+        // Calculate from Scores
+        Object.keys(matchScores).forEach(matchId => {
+            const score = matchScores[matchId];
+            const match = fixtures.find(m => m.id === matchId);
+
+            if (score && score.home !== '' && score.away !== '' && match) {
+                const h = teamStats[match.home];
+                const a = teamStats[match.away];
+                const hGoals = parseInt(score.home, 10);
+                const aGoals = parseInt(score.away, 10);
+
+                if (!isNaN(hGoals) && !isNaN(aGoals)) {
+                    h.P++; a.P++;
+                    h.GF += hGoals; h.GA += aGoals;
+                    a.GF += aGoals; a.GA += hGoals;
 
                     if (hGoals > aGoals) {
-                        teams[homeTeam].w++; teams[homeTeam].pts += 3; teams[awayTeam].l++;
+                        h.W++; h.Pts += 3;
+                        a.L++;
                     } else if (aGoals > hGoals) {
-                        teams[awayTeam].w++; teams[awayTeam].pts += 3; teams[homeTeam].l++;
+                        a.W++; a.Pts += 3;
+                        h.L++;
                     } else {
-                        teams[homeTeam].d++; teams[homeTeam].pts += 1;
-                        teams[awayTeam].d++; teams[awayTeam].pts += 1;
+                        h.D++; h.Pts += 1;
+                        a.D++; a.Pts += 1;
                     }
+
+                    h.GD = h.GF - h.GA;
+                    a.GD = a.GF - a.GA;
                 }
-            });
+            }
         });
 
-        for (let t in teams) { teams[t].gd = teams[t].gf - teams[t].ga; }
+        // Convert to Array & Sort Teams
+        const sortedTeams = Object.values(teamStats).sort((a, b) =>
+            b.Pts - a.Pts || b.GD - a.GD || b.GF - a.GF
+        );
 
-        renderTables();
-    }
-
-    function renderTables() {
-        // 1. Render Team Table
-        const teamBody = document.getElementById('team-standings-body');
+        // Render Team Standings
+        const teamBody = document.getElementById('team-standings');
         teamBody.innerHTML = '';
-
-        let sortedTeams = Object.keys(teams).map(name => ({ name, ...teams[name] }));
-        sortedTeams.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
-
-        sortedTeams.forEach(t => {
+        sortedTeams.forEach((t, index) => {
             teamBody.innerHTML += `
                 <tr>
-                    <td class="team-name">${t.name} ${getBadge(t.manager)}</td>
-                    <td>${t.p}</td><td>${t.w}</td><td>${t.d}</td><td>${t.l}</td>
-                    <td>${t.gf}</td><td>${t.ga}</td><td>${t.gd}</td>
-                    <td><strong>${t.pts}</strong></td>
+                    <td>${index + 1}</td>
+                    <td><strong>${t.name}</strong></td>
+                    <td>${t.player}</td>
+                    <td>${t.P}</td>
+                    <td>${t.W}</td>
+                    <td>${t.D}</td>
+                    <td>${t.L}</td>
+                    <td>${t.GF}</td>
+                    <td>${t.GA}</td>
+                    <td>${t.GD}</td>
+                    <td><strong>${t.Pts}</strong></td>
                 </tr>
             `;
         });
 
-        // 2. Render Overall Player Leaderboard
-        const playerBody = document.getElementById('player-standings-body');
-        playerBody.innerHTML = '';
-
-        let playerStats = Object.keys(players).map(pName => {
-            let assignedTeams = players[pName].teams;
-            let combined = {
-                name: pName,
-                teamsStr: assignedTeams.join(' & '),
-                p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0
-            };
-
-            assignedTeams.forEach(tName => {
-                const t = teams[tName];
-                combined.p += t.p;
-                combined.w += t.w;
-                combined.d += t.d;
-                combined.l += t.l;
-                combined.gf += t.gf;
-                combined.ga += t.ga;
-                combined.gd += t.gd;
-                combined.pts += t.pts;
-            });
-
-            return combined;
+        // Calculate Player Leaderboard
+        const playerStats = {};
+        ["Player 1", "Player 2", "Player 3"].forEach(p => {
+            playerStats[p] = { name: p, teams: [], P: 0, W: 0, D: 0, L: 0, GF: 0, GA: 0, GD: 0, Pts: 0 };
         });
 
-        // Sort players by total combined Points, Goal Difference, then Goals For
-        playerStats.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
+        Object.values(teamStats).forEach(t => {
+            const p = playerStats[t.player];
+            if (p) {
+                p.teams.push(t.name);
+                p.P += t.P;
+                p.W += t.W;
+                p.D += t.D;
+                p.L += t.L;
+                p.GF += t.GF;
+                p.GA += t.GA;
+                p.GD += t.GD;
+                p.Pts += t.Pts;
+            }
+        });
 
-        playerStats.forEach(p => {
+        const sortedPlayers = Object.values(playerStats).sort((a, b) =>
+            b.Pts - a.Pts || b.GD - a.GD || b.GF - a.GF
+        );
+
+        // Render Player Leaderboard
+        const playerBody = document.getElementById('player-leaderboard');
+        playerBody.innerHTML = '';
+        sortedPlayers.forEach((p, index) => {
             playerBody.innerHTML += `
                 <tr>
-                    <td class="player-name">${p.name} ${getBadge(p.name)}</td>
-                    <td class="team-subtext">${p.teamsStr}</td>
-                    <td>${p.p}</td><td>${p.w}</td><td>${p.d}</td><td>${p.l}</td>
-                    <td>${p.gf}</td><td>${p.ga}</td><td>${p.gd}</td>
-                    <td><strong>${p.pts}</strong></td>
+                    <td><strong>${index + 1}</strong></td>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.teams.join(' & ')}</td>
+                    <td>${p.P}</td>
+                    <td>${p.W}</td>
+                    <td>${p.D}</td>
+                    <td>${p.L}</td>
+                    <td>${p.GF}</td>
+                    <td>${p.GA}</td>
+                    <td>${p.GD}</td>
+                    <td><strong>${p.Pts}</strong></td>
                 </tr>
             `;
         });
     }
-
-    renderFixtures();
 </script>
 
 </body>
