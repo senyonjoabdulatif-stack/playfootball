@@ -273,25 +273,26 @@
         updateProfile
     } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import {
-        getFirestore,
-        doc,
-        setDoc,
-        onSnapshot
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        getDatabase,
+        ref,
+        set,
+        onValue
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     // 1. Firebase Configuration (Replace with your own Firebase Console details)
     const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT_ID.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
+        apiKey: "AIzaSyrpuCl0cPR1o7iKpX0bnjLDgnJnXPxe4",
+        authDomain: "playfootball-130f9.firebaseapp.com",
+        projectId: "playfootball-130f9",
+        storageBucket: "playfootball-130f9.appspot.com",
+        messagingSenderId: "892703395345",
+        appId:"1:892703395345:web:052f92885fbce97d6e2bb0",
+        databaseURL: "https://playfootball-130f9-default-rtdb.firebaseio.com"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getFirestore(app);
+    const db = getDatabase(app);
 
     // Initial League Setup
     const teams = [
